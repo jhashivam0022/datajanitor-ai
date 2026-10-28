@@ -6,7 +6,7 @@ DataJanitor AI is an open-source data analysis workbench designed to help develo
 
 Upload a CSV or Excel file, explore its structure, visualize patterns, identify data-quality issues, and work toward building machine learning models — all through one interface.
 
-> 🚧 **Project status:** In development. Features described in the roadmap are planned unless explicitly marked as implemented.
+> 🚧 **Project status:** In development. Currently implemented: CSV/Excel upload and basic dataset profiling (FastAPI backend + React frontend). Everything else in the roadmap is planned.
 
 ## ✨ The Problem
 
@@ -62,7 +62,7 @@ The goal is to use open-weight models such as Gemma or Qwen through a suitable i
 
 | Component | Technology |
 |---|---|
-| Frontend | React, Tailwind CSS |
+| Frontend | React (Vite), plain CSS (Tailwind CSS planned) |
 | Backend API | Python, FastAPI |
 | Data processing | Pandas, NumPy |
 | Visualization | Plotly |
@@ -137,17 +137,19 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-Install dependencies after the backend's `requirements.txt` has been created:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Start the API using the entry point configured in the project:
+Start the API (runs on http://localhost:8000):
 
 ```bash
 uvicorn main:app --reload
 ```
+
+Interactive API docs are available at http://localhost:8000/docs.
 
 ### 3. Set up the frontend
 
@@ -159,14 +161,38 @@ npm install
 npm run dev
 ```
 
-Use the local URL printed by Vite to open the application.
+Open http://localhost:5173, upload a CSV or Excel file, and view the dataset profile. To point the frontend at a different backend, set `VITE_API_URL`.
 
-> These commands assume the repository uses `backend/main.py`, a backend `requirements.txt`, and a Vite-based React frontend. Adjust the paths and entry point to match the actual project structure.
+## 📁 Project Structure
+
+```text
+datajanitor-ai/
+├── backend/
+│   ├── main.py            # FastAPI app: health check and /upload profiling
+│   └── requirements.txt
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx        # Upload form and profile display
+│       └── index.css
+└── README.md
+```
+
+## 🔌 API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Health check |
+| POST | `/upload` | Upload a `.csv`, `.xlsx`, or `.xls` file (multipart field `file`). Returns row/column counts, duplicate and missing-value totals, per-column type, missing, unique and numeric stats, and a 5-row preview. |
 
 ## 🗺️ Roadmap
 
-- [ ] Build the initial dashboard and dataset-upload workflow.
-- [ ] Implement dataset profiling and quality checks.
+- [x] Build the initial dashboard and dataset-upload workflow.
+- [x] Implement basic dataset profiling (types, missing values, duplicates, numeric stats).
+- [ ] Add deeper data-quality checks (outliers, inconsistent values).
 - [ ] Add interactive univariate and bivariate visualizations.
 - [ ] Add correlation analysis and multivariate exploration.
 - [ ] Integrate an open-weight model for natural-language insights.
